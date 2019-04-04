@@ -17,7 +17,6 @@ class RegisterActivity : AppCompatActivity() {
         setContentView(R.layout.activity_register)
 
         enableSpinner(false)
-        println("FUCKI")
         println(createHash("asd"))
 
 
@@ -26,15 +25,13 @@ class RegisterActivity : AppCompatActivity() {
             val password_confirm = editPassword2.text.toString()
             if(password == password_confirm){
                 val name = editName.text.toString()
-                val surname = editSurname.text.toString()
                 val username = editUsername.text.toString()
-                if (password.isEmpty() && password_confirm.isNotBlank() && name.isEmpty() && surname.isNotEmpty() && username.isNotEmpty()){
+                if (password.isEmpty() && password_confirm.isNotBlank() && name.isEmpty() && username.isNotEmpty()){
 
                 } else {
                     if(password.isEmpty()) editPassword.error = ""
                     if(password_confirm.isEmpty()) editPassword2.error = ""
                     if(name.isEmpty()) editName.error = ""
-                    if(surname.isEmpty()) editSurname.error = ""
                     if(username.isEmpty()) editUsername.error = ""
                 }
             } else {

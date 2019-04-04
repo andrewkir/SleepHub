@@ -44,9 +44,9 @@
             android:layout_marginStart="24dp" app:layout_constraintStart_toStartOf="parent"
             android:layout_marginEnd="24dp" app:layout_constraintEnd_toEndOf="parent"
             style="@style/Widget.AppCompat.EditText"
-            app:layout_constraintHorizontal_bias="0.0" android:layout_marginTop="16dp"
+            app:layout_constraintHorizontal_bias="1.0" android:layout_marginTop="16dp"
             app:layout_constraintTop_toTopOf="parent" app:layout_constraintBottom_toTopOf="@+id/linearLayout"
-            android:layout_marginBottom="8dp" app:layout_constraintVertical_bias="0.167"/>
+            android:layout_marginBottom="8dp" app:layout_constraintVertical_bias="0.26"/>
     <com.rengwuxian.materialedittext.MaterialEditText
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -66,23 +66,6 @@
             app:layout_constraintTop_toBottomOf="@+id/editUsername"/>
     <com.rengwuxian.materialedittext.MaterialEditText
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:inputType="textPersonName"
-            app:met_bottomTextSize="0sp"
-            android:ems="10"
-            app:met_textColor="@color/colorPrimary"
-            android:textColorHint="@color/colorAccent"
-            android:id="@+id/editSurname"
-            android:paddingLeft="10dp"
-            android:paddingBottom="15dp"
-            android:hint="Surname" android:textColor="@color/colorPrimary"
-            android:layout_marginStart="24dp" app:layout_constraintStart_toStartOf="parent"
-            android:layout_marginEnd="24dp" app:layout_constraintEnd_toEndOf="parent"
-            style="@style/Widget.AppCompat.EditText"
-            app:layout_constraintHorizontal_bias="0.0"
-            android:layout_marginTop="8dp" app:layout_constraintTop_toBottomOf="@+id/editName"/>
-    <com.rengwuxian.materialedittext.MaterialEditText
-            android:layout_width="0dp"
             app:met_bottomTextSize="0sp"
             android:layout_height="70dp"
             android:ems="10"
@@ -98,7 +81,7 @@
             android:inputType="textPassword" android:layout_marginStart="24dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintHorizontal_bias="1.0"
-            android:layout_marginTop="8dp" app:layout_constraintTop_toBottomOf="@+id/editSurname"/>
+            android:layout_marginTop="8dp" app:layout_constraintTop_toBottomOf="@+id/editName"/>
 
     <com.rengwuxian.materialedittext.MaterialEditText
             android:layout_width="0dp"
