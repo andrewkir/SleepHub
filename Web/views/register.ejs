@@ -1,0 +1,27 @@
+<% include ./partials/header.ejs %>
+
+<div class="ui padded text container segment">
+  <h2>Create new account</h2>
+  <form class="ui form" method="post">
+      <div class="field">
+        <input type="text" name="name" placeholder="Name">
+      </div>
+      <div class="field">
+        <input type="text" name="email" placeholder="Email">
+      </div>
+      <br>
+      <div class="field">
+        <input type="text" name="username" placeholder="Username">
+      </div>
+      <div class="field">
+        <input type="password" name="password" placeholder="Password">
+      </div>
+      <div class="field">
+        <input type="password" placeholder="Repeat password">
+      </div>
+      <button class="ui button" type="submit">Submit</button>
+  </form>
+</div>
+
+
+<% include ./partials/footer.ejs %>

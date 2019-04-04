@@ -1,0 +1,96 @@
+<% include ./partials/header.ejs %>
+<link rel="stylesheet" href="style/home.css">
+
+<div class="about">
+    <div class="aboutBackground">
+    
+    </div>
+</div>
+
+<div class="main">
+<% var months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]; %>
+    <div class="mainBlock">
+        <% for(let i = postData.length-1; i>=0; i--){%>
+        <div class="postBlock">
+            <div class="post">
+                <div class="innerPost">
+                    <div class="postDate"><%= postData[i].date.getDate() %> <%= months[postData[i].date.getMonth()] %> <%= postData[i].date.getFullYear() %></div>
+                    <div class="textPreview">
+                        <%= postData[i].post %>
+                    </div>
+                    <div class="readMore">
+                        <a href="/post/<%= postData[i].id %>">Read More</a>
+                    </div>
+                </div>
+            </div>
+            <div class="author">
+                <div class="picBlock">
+                    <div class="pic"></div>
+                    <div class="displayName">
+                    <%= postData[i].displayName %>
+                    </div>
+                </div>
+                <div class="statBlock">
+                    <div class="statItem">
+                        <div class="iconBlock likeButton" onmouseover="enlarge(this, 26)" onmouseout="enlarge(this, 20)" onclick=toggleLike("<%= postData[i].id %>")>
+                            <i class="ui large fire icon" style="color: <% if(postData[i].likes.includes(currentUserId.toString())){%> red <%} %>"  id="icon<%= postData[i].id %>"></i>
+                        </div>
+                        <div class="valueBlock">
+                            <span id="like<%= postData[i].id %>"><%= postData[i].likes.length%></span>
+                        </div>
+                    </div>
+                    <div class="statItem">
+                        <div class="iconBlock commentButton" onmouseover="enlarge(this, 26)" onmouseout="enlarge(this, 20)">
+                            <i class="ui large comment alternate icon"></i>
+                        </div>
+                        <div class="valueBlock">
+                            <span><%= postData[i].comments.length%></span>
+                        </div>
+                    </div>
+                    <div class="statItem">
+                        <div class="iconBlock eyeButton" onmouseover="enlarge(this, 26)" onmouseout="enlarge(this, 20)">
+                            <i class="ui large eye icon"></i>
+                        </div>
+                        <div class="valueBlock">
+                            <span><%= postData[i].views%></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <% } %>
+    </div>
+</div>
+
+<script>
+
+function enlarge(e, state){
+    e.querySelectorAll('i')[0].style.fontSize = `${state}px`;
+}
+function toggleLike(id){
+    if("<%= currentUserId %>"){
+        fetch("/toggleLike", {
+            method: "POST",
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                id: id
+            })
+        })
+        .then(function(res){
+            return res.json();
+        })
+        .then(function(data){
+            if(data.hasUsername=="nope"){ window.location = "/profile/me" }
+            else{
+                document.querySelector(`#like${id}`).innerHTML = data.ammount;
+                document.querySelector(`#icon${id}`).style.color = data.color;
+            }
+        });
+    } else {
+        window.location="/login"
+    }
+}
+
+</script>
+
+<% include ./partials/footer.ejs %>

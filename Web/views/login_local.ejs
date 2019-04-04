@@ -1,0 +1,17 @@
+<% include ./partials/header.ejs %>
+
+<div class="ui padded text container segment">
+  <h2>Log In</h2>
+  <form class="ui form" method="post">
+      <div class="field">
+        <input type="text" name="username" placeholder="Username or email" maxlength="20">
+      </div>
+      <div class="field">
+        <input type="password" name="password" placeholder="Password">
+      </div>
+      <button class="ui button" type="submit">Submit</button>
+  </form>
+</div>
+
+
+<% include ./partials/footer.ejs %>

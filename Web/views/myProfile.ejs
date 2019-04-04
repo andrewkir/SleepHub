@@ -1,0 +1,21 @@
+<% include ./partials/header.ejs %>
+
+<div class="ui padded text container segment">
+    <h2>Account Info</h2>
+    <form class="ui form" action="?_method=PUT" method="post">
+        <div class="field">
+            <input type="text" name="display_name" value="<%= userData.displayName %>" placeholder="Name">
+        </div>
+        <div class="field">
+            <input type="text" name="username" value="<%= userData.username %>" placeholder="Username">
+        </div>
+        <button class="ui button" type="submit">Submit</button>
+    </form>
+    <br>
+    <a href="/GLink"><button class="ui button">LINK GOOGLE</button></a>
+</div>
+
+
+
+
+<% include ./partials/footer.ejs %>

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.css">
+    <link rel="stylesheet" href="/style/header.css">
+</head>
+<body>
+
+
+<div class="header" id="header">
+    <div class="header-container">
+        <div class="left menu">
+            <div class="menu-button">
+                <a href="/">
+                <div class="headerText" onmouseover="a(this)">
+                    LOGO
+                    <div class="hoverLine"></div>
+                </div>
+                </a>
+            </div>
+        </div>
+
+        <div class="right menu">
+
+            <% if(!currentUserDisplayName){ %>
+            <div class="menu-button">
+                <a href="/login">
+                <div class="headerText">
+                    Login
+                    <div class="hoverLine"></div>
+                </div>
+                </a>
+            </div>
+            <div class="menu-button">
+                <a href="/register">
+                <div class="headerText">
+                    Sign Up
+                    <div class="hoverLine"></div>
+                </div>
+                </a>
+            </div>
+            <% } %>
+
+            <% if(currentUserDisplayName){ %>
+            <div class="menu-button">
+                <a href="/new">
+                <div class="headerText">
+                    New Post
+                    <div class="hoverLine"></div>
+                </div>
+                </a>
+            </div>
+            <div class="menu-button">
+                <a href="/profile/me">
+                <div class="headerText">
+                    <%= currentUserDisplayName %>
+                    <div class="hoverLine"></div>
+                </div>
+                </a>
+            </div>
+            <div class="menu-button">
+                <a href="/logout">
+                <div class="headerText">
+                    Log Out
+                    <div class="hoverLine"></div>
+                </div>
+                </a>
+            </div>
+            <% } %>
+
+        </div>
+    </div>
+    
+    <script src="/script/header.js"></script>
+
+</div>
+<div class="underHeader">
+</div>
+<div class="background">
+</div>

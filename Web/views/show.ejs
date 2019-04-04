@@ -1,0 +1,22 @@
+<% include partials/header %>
+<link rel="stylesheet" href="/style/show.css">
+
+<div class="ui padded segment container">
+    <h1><%= postData.displayName%></h1>
+    <h2>User: <%= postData.username%></h2>
+    <p><%= postData.post%></p>
+    <div class="buttonsContainer">
+        <div class="leftButtons">
+            <div class="ui basic button"><%= postData.likes.length %></div>
+        </div>
+        <% if(myPost){%>
+            <div class="rightButtons">
+                <a href="/post/<%= postData.id%>/edit"><div class="ui basic button">Edit</div></a>
+                <a href="/post/<%= postData.id%>/delete"><div class="ui red basic button">Delete</div></a>
+            </div>
+        <% } %>
+    </div>
+
+</div>
+
+<% include partials/footer %>
