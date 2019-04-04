@@ -36,7 +36,6 @@ class LoginActivity : AppCompatActivity() {
             }
         }
     }
-cmd
 
     fun enableSpinner(enable: Boolean) {
         if (enable) {
