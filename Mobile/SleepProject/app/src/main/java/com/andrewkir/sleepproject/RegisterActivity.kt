@@ -2,9 +2,11 @@ package com.andrewkir.sleepproject
 
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Toast
 import com.andrewkir.sleepproject.R
+import com.andrewkir.sleepproject.Services.Web
 import kotlinx.android.synthetic.main.activity_register.*
 import javax.crypto.Mac
 import javax.crypto.spec.SecretKeySpec
@@ -24,21 +26,21 @@ class RegisterActivity : AppCompatActivity() {
         registerButton.setOnClickListener {
             val password = editPassword.text.toString()
             val password_confirm = editPassword2.text.toString()
-            if(password == password_confirm){
+            if (password == password_confirm) {
                 val name = editName.text.toString()
-                val surname = editSurname.text.toString()
                 val username = editUsername.text.toString()
-                if (password.isEmpty() && password_confirm.isNotBlank() && name.isEmpty() && surname.isNotEmpty() && username.isNotEmpty()){
-
+                if (password.isNotEmpty() && password_confirm.isNotEmpty() && name.isNotEmpty() && username.isNotEmpty()) {
+                    Web.register(this, name, username, password) { succes ->
+                        Toast.makeText(this, "oh yeah", Toast.LENGTH_SHORT).show()
+                    }
                 } else {
-                    if(password.isEmpty()) editPassword.error = ""
-                    if(password_confirm.isEmpty()) editPassword2.error = ""
-                    if(name.isEmpty()) editName.error = ""
-                    if(surname.isEmpty()) editSurname.error = ""
-                    if(username.isEmpty()) editUsername.error = ""
+                    if (password.isEmpty()) editPassword.error = ""
+                    if (password_confirm.isEmpty()) editPassword2.error = ""
+                    if (name.isEmpty()) editName.error = ""
+                    if (username.isEmpty()) editUsername.error = ""
                 }
             } else {
-                Toast.makeText(this, "Please check passwords",Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Please check passwords", Toast.LENGTH_SHORT).show()
                 editPassword2.error = ""
                 editPassword.error = ""
             }
