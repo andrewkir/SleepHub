@@ -1,11 +1,11 @@
 package com.andrewkir.sleepproject
 
+import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_login.*
-import org.json.JSONObject
 import com.andrewkir.sleepproject.R
 import com.andrewkir.sleepproject.Services.Web
 
@@ -19,11 +19,8 @@ class LoginActivity : AppCompatActivity() {
         loginBtn.setOnClickListener {
             val name = editName.text.toString()
             val password = editPassword.text.toString()
-            val body = JSONObject()
             if (name.isNotEmpty() && password.isNotEmpty()) {
                 enableSpinner(true)
-                body.put("email", name)
-                body.put("password", password)
                 Web.login(this, name, password) { succes ->
                     if (succes) {
                         Toast.makeText(this, "ok", Toast.LENGTH_SHORT).show()
@@ -35,6 +32,8 @@ class LoginActivity : AppCompatActivity() {
                 if (password.isEmpty()) editPassword.error = ""
             }
         }
+
+
     }
 
     fun enableSpinner(enable: Boolean) {
@@ -49,4 +48,9 @@ class LoginActivity : AppCompatActivity() {
         editPassword.isEnabled = !enable
     }
 
+
+    fun OnSignClick(view: View) {
+        val intent = Intent(this, RegisterActivity::class.java)
+        startActivity(intent)
+    }
 }
