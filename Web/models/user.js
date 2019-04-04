@@ -23,10 +23,6 @@ var UserSchema = new mongoose.Schema({
         password: {
             type: String
         },
-        email: {
-            type: String,
-            lowercase: true
-        },
         isVerfied: {
             type: Boolean,
             default: false

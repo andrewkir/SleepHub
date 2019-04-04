@@ -1,11 +1,8 @@
 var express     = require('express'),
     router      = express.Router(),
-    bodyParser  = require("body-parser"),
-    mongoose    = require("mongoose");
+    mongoose    = require("mongoose"),
+    randomstring    = require("randomstring");
 
-const app = express();
-app.use(bodyParser.urlencoded({extended: true}));
-app.use(bodyParser.json());
 const db = require("./models");
 var myRoutes = require('./routes');
 
@@ -13,19 +10,19 @@ router.use(function(req, res, next) {
   next();
 });
 
-router.route('/register')
-.get(function(req, res) {
-    db.collections.User.findById(req.user._id)
+router.route('/register').post(function(req, res) {
+    db.collections.User.create({
+        username: req.body.username,
+        ["local.password"]: req.body.password,
+        displayName: req.body.name,
+        androidToken: randomstring.generate(20)
+    })
     .then((data)=>{
-        db.collections.Post.create({
-            userId: data.id,
-            username: data.username,
-            post: req.body.post_body,
-            displayName: data.displayName || ""
-        })
-        .then((result)=>{
-            res.redirect(`/post/${result.id}`);
-        })
+        response = {
+            statusCode: 200,
+            androidToken: data.androidToken
+        }
+        res.send(JSON.stringify(response));
     })
     .catch((err)=>{})
 });

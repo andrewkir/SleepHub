@@ -6,11 +6,10 @@ var crypto          = require("crypto"),
     bodyParser      = require("body-parser"),
     LocalStrategy   = require("passport-local"),
     mOverride       = require("method-override"),
-    GoogleStrategy  = require("passport-google-oauth20");
+    GoogleStrategy  = require("passport-google-oauth20"),
     randomstring    = require("randomstring");
  
 
-randomstring.generate(7);
 
 
 const config = require("./root/config.json");
@@ -18,7 +17,6 @@ const app = express();
 const db = require("./models");
 var myRoutes = require('./routes');
 
-app.use('/api', myRoutes);
 
 app.use(express.static('public'));
 app.set("view engine", "ejs");
@@ -30,6 +28,9 @@ app.use(require("express-session")({
     saveUninitialized: false
 }));
 app.use(mOverride("_method"));
+
+app.use('/api', myRoutes);
+
 
 
 //passport part
@@ -315,5 +316,9 @@ function hasUsernameFetch(req, res, next){
 function hash(password){
     return crypto.createHmac('sha256', config.HASHSECRET).update(password).digest('hex');
 }
+
+app.get("/qqq", (req, res)=>{
+    res.render("shit");
+});
 
 app.listen(3000);
