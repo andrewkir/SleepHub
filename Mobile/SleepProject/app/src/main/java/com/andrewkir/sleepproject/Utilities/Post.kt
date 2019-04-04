@@ -1,4 +1,4 @@
-package com.andrewkir.sleepproject
+package com.andrewkir.sleepproject.Utilities
 
 class Post {
     var userId = ""
