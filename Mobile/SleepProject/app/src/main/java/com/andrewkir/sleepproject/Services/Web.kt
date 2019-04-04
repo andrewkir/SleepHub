@@ -3,6 +3,7 @@ package com.andrewkir.sleepproject.Services
 import android.content.Context
 import android.util.Log
 import android.widget.Toast
+import com.andrewkir.sleepproject.App
 import com.andrewkir.sleepproject.Utilities.LOGIN_URL
 import com.andrewkir.sleepproject.Utilities.REGISTER_URL
 import com.android.volley.Request
@@ -39,23 +40,32 @@ object Web {
             }
         Volley.newRequestQueue(context).add(loginRequests)
     }
-
     fun register(context: Context, name: String, username: String, password: String, complete: (Boolean) -> Unit) {
         val jsonBody = JSONObject()
         jsonBody.put("name", name)
         jsonBody.put("password", password)
         jsonBody.put("username", username)
         val loginBody = jsonBody.toString()
-        val loginRequests = object : StringRequest(Request.Method.POST, REGISTER_URL, Response.Listener { response ->
+        val loginRequests = object : JsonObjectRequest(Request.Method.POST, REGISTER_URL,null, Response.Listener { response ->
             complete(true)
             Log.d("RES", response.toString())
             Toast.makeText(context, response.toString(), Toast.LENGTH_LONG).show()
+            Toast.makeText(context,response.getString("androidToken"),Toast.LENGTH_LONG).show()
+
+            App.prefs.userToken = response.getString("androidToken")
+            App.prefs.userUsername = username
+            App.prefs.userName = name
+            App.prefs.isLoggedIn = true
+
         }, Response.ErrorListener { error ->
             Log.d("ERROR", "Could not login user: $error")
             complete(false)
         }) {
             override fun getBody(): ByteArray {
                 return loginBody.toByteArray()
+            }
+            override fun getBodyContentType(): String {
+                return "application/json; charset=utf-8"
             }
         }
         Volley.newRequestQueue(context).add(loginRequests)
