@@ -46,6 +46,9 @@ var UserSchema = new mongoose.Schema({
     },
     token: {
         type: String
+    },
+    androidToken: {
+        type: String
     }
 });
 

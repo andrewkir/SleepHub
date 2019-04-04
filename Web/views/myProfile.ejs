@@ -11,8 +11,10 @@
         </div>
         <button class="ui button" type="submit">Submit</button>
     </form>
-    <br>
-    <a href="/GLink"><button class="ui button">LINK GOOGLE</button></a>
+    <% if(!userData.gLink){ %>
+        <br>
+        <a href="/GLink"><button class="ui button">LINK GOOGLE</button></a>
+    <% } %>
 </div>
 
 

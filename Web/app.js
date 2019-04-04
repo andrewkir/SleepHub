@@ -7,11 +7,18 @@ var crypto          = require("crypto"),
     LocalStrategy   = require("passport-local"),
     mOverride       = require("method-override"),
     GoogleStrategy  = require("passport-google-oauth20");
+    randomstring    = require("randomstring");
+ 
+
+randomstring.generate(7);
+
 
 const config = require("./root/config.json");
 const app = express();
-
 const db = require("./models");
+var myRoutes = require('./routes');
+
+app.use('/api', myRoutes);
 
 app.use(express.static('public'));
 app.set("view engine", "ejs");
@@ -34,25 +41,10 @@ passport.use(new GoogleStrategy({
     callbackURL: "/return"
   }, function(accessToken, refreshToken, profile, cb) {
       console.log("IM IN");
-    // db.collections.User.findOne({ ["google.id"]: profile.id }, function (err, user) {
-    //     if(user){
-    //         db.collections.User.findOneAndUpdate({ username:  }, {
-    //             token: accessToken
-    //         }, (err, data)=>{
-    //             return cb(err, data);
-    //         });
-    //     } else {
-    //         db.collections.User.create({
-    //             method: "google",
-    //             [`${profile.provider}.id`]: profile.id,
-    //             displayName: profile.displayName,
-    //             [`${profile.provider}.gender`]: profile.gender,
-    //             token: accessToken,
-    //         }, (err, data)=>{ return cb(err, data) });
-    //     }
-    // });
+   
     return cb(null, {
-        token: refreshToken
+        refreshToken,
+        profile
     });
 }));
 passport.use(new LocalStrategy(
@@ -91,7 +83,6 @@ app.use((req, res, next)=>{
         return next();
     }
 });
-//
 
 app.get("/", (req, res)=>{
     db.collections.Post.find()
@@ -137,24 +128,30 @@ app.get("/GLink", passport.authenticate("google", {
     accessType: 'offline',
     prompt: 'consent'
 }));
-// app.get("/login/local", (req, res)=>{
-//     res.render("login_local");
-// });
 app.post("/login", passport.authenticate("local", {successRedirect: "/"}), (req, res)=>{});
-// app.get("/return", (req, res)=>{
-//     console.log("fuck");
-//     res.redirect("/");
-// });
-app.get("/return", passport.authenticate("google", function(err, user, info){
-    console.log(user);
-    console.log("that was user");
-    console.log(info);
-    console.log("that was info");
-}), (req, res)=>{
-    console.log("fuck");
-    res.redirect("/");
-});
+app.get("/return", function(req, res, next) {
 
+    passport.authenticate('google', function(err, user, info) {
+        db.collections.User.findById(req.user._id, function (err, data) {
+            if(data.gLink){
+                console.log("already logged in, faggot")
+                return res.redirect("/");
+            } else {
+                db.collections.User.findByIdAndUpdate(data._id, {
+                    gLink: true,
+                    ["google.id"]: user.profile.id,
+                    ["google.gender"]: user.profile.gender || "-",
+                    token: user.refreshToken
+                })
+                .then((data)=>{
+                    if(data){
+                        return res.redirect("/");
+                    }
+                })
+            }
+        });
+    })(req, res, next);
+  });
 app.get("/info", isLoggedIn, (req, res)=>{
     db.collections.User.findById(req.user._id)
     .then((data)=>{
@@ -198,7 +195,8 @@ app.post("/register", (req, res)=>{
         username: req.body.username,
         ["local.password"]: hash(req.body.password),
         ["local.email"]: req.body.email,
-        displayName: req.body.name
+        displayName: req.body.name,
+        androidToken: randomstring(20)
     })
     .then((data)=>{
         passport.authenticate("local")(req, res, ()=>{
@@ -211,7 +209,7 @@ app.get("/logout", (req, res)=>{
     req.logout();
     res.redirect("/");
 });
-
+ 
 app.get("/new", isLoggedIn, hasUsername, (req, res)=>{
     res.render("newPost");
 })

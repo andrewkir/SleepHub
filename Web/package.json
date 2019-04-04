@@ -1,5 +1,5 @@
 {
-  "name": "sleep-project",
+  "name": "Web",
   "version": "1.0.0",
   "description": "",
   "main": "app.js",
@@ -21,6 +21,7 @@
     "passport": "^0.4.0",
     "passport-google-oauth20": "^1.0.0",
     "passport-local": "^1.0.0",
+    "randomstring": "^1.1.5",
     "request": "^2.88.0"
   }
 }
