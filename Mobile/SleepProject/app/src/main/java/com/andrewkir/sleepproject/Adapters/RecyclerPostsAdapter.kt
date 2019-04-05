@@ -6,6 +6,8 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Filter
+import android.widget.Filterable
 import android.widget.TextView
 import com.andrewkir.sleepproject.R
 import com.andrewkir.sleepproject.Utilities.Post
@@ -14,7 +16,9 @@ import java.text.SimpleDateFormat
 import java.util.*
 import java.util.logging.SimpleFormatter
 
-class RecyclerPostsAdapter (val context: Context, val posts: List<PostMinified>, val itemClick: (PostMinified) -> Unit) : RecyclerView.Adapter<RecyclerPostsAdapter.Holder>() {
+class RecyclerPostsAdapter (val context: Context, val posts: List<PostMinified>, val itemClick: (PostMinified) -> Unit) :
+    RecyclerView.Adapter<RecyclerPostsAdapter.Holder>(){
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder {
         val view = LayoutInflater.from(context).inflate(R.layout.raw_post_item, parent,false)
         //view.setBackgroundColor(Color.parseColor("#ff9966"))

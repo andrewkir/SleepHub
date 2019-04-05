@@ -32,7 +32,7 @@ class PostActivity : AppCompatActivity() {
         //date.setText(post.date)
         //postTitle.setText(post.postTitle)
         //body.setText(post.body)
-        
+
 
 
 
