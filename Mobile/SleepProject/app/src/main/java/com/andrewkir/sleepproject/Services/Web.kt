@@ -16,16 +16,19 @@ import org.json.JSONObject
 object Web {
 
 
-    fun login(context: Context, email: String, password: String, complete: (Boolean) -> Unit) {
+    fun login(context: Context, username: String, password: String, complete: (Boolean) -> Unit) {
         val jsonBody = JSONObject()
-        jsonBody.put("email", email)
+        jsonBody.put("username", username)
         jsonBody.put("password", password)
         val loginBody = jsonBody.toString()
         val loginRequests =
             object : JsonObjectRequest(Request.Method.POST, LOGIN_URL, null, Response.Listener { response ->
                 complete(true)
                 Log.d("RES", response.toString())
-                Toast.makeText(context, response.toString(), Toast.LENGTH_LONG).show()
+                App.prefs.userToken = response.getString("androidToken")
+                App.prefs.userUsername = username
+                App.prefs.userName = response.getString("name")
+                App.prefs.isLoggedIn = true
             }, Response.ErrorListener { error ->
                 Log.d("ERROR", "Could not login user: $error")
                 complete(false)

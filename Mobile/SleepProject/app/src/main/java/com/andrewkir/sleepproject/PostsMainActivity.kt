@@ -10,12 +10,16 @@ import android.support.v4.view.GravityCompat
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
+import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.widget.Toast
 import com.andrewkir.sleepproject.Adapters.RecyclerPostsAdapter
+import com.andrewkir.sleepproject.Utilities.Comment
 import com.andrewkir.sleepproject.Utilities.Post
+import com.andrewkir.sleepproject.Utilities.PostMinified
 import kotlinx.android.synthetic.main.activity_posts_main.*
 import kotlinx.android.synthetic.main.app_bar_posts_main.*
 import kotlinx.android.synthetic.main.content_posts_main.*
@@ -42,8 +46,22 @@ class PostsMainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
 //        supportActionBar?.setDisplayHomeAsUpEnabled(true)
 //        supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_google__g__logo)
         val recycler = findViewById<RecyclerView>(R.id.postsRecycler)
-//        val posts = List<Post>(Post())
-//        recycler.adapter = RecyclerPostsAdapter(this, )
+        val posts = listOf(
+            PostMinified(
+                "username",
+                "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+                true,
+                1308,
+                "123", "05.04.2019", 123
+            ), PostMinified("username", "test", false, 1308, "asdasd", "05.04.2019", 123)
+        )
+        recycler.adapter = RecyclerPostsAdapter(this, posts) { post ->
+            Toast.makeText(this, post.username, Toast.LENGTH_SHORT).show()
+        }
+        val layoutManager = LinearLayoutManager(this)
+        recycler.layoutManager = layoutManager
+        recycler.setHasFixedSize(true)
+
         nav_view.setNavigationItemSelectedListener(this)
     }
 
@@ -83,7 +101,7 @@ class PostsMainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
     }
 
     fun OnLogoutClick(view: View) {
-        val builder = AlertDialog.Builder(this,R.style.AlertDialog)
+        val builder = AlertDialog.Builder(this, R.style.AlertDialog)
         builder.setTitle("Logout")
         builder.setMessage("Are you sure you want to quit?")
         builder.setPositiveButton("Yes") { _, _ ->

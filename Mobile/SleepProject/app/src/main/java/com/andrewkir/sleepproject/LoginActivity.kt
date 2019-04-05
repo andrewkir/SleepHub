@@ -30,7 +30,8 @@ class LoginActivity : AppCompatActivity() {
                     enableSpinner(true)
                     Web.login(this, username, createHash(password)) { succes ->
                         if (succes) {
-                            Toast.makeText(this, "ok", Toast.LENGTH_SHORT).show()
+                            startActivity(Intent(this,PostsMainActivity::class.java))
+                            finish()
                         }
                         enableSpinner(false)
                     }
