@@ -4,6 +4,7 @@ import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v4.app.ShareCompat
 import android.content.Intent
+import com.andrewkir.sleepproject.Utilities.Post
 import kotlinx.android.synthetic.main.activity_post.*
 
 
@@ -25,6 +26,15 @@ class PostActivity : AppCompatActivity() {
         val commentsList = comments_list
         val edComment = comment_input
         val sendComment = comment_send
+
+        //val post = Post()
+        //username.setText(post.username)
+        //date.setText(post.date)
+        //postTitle.setText(post.postTitle)
+        //body.setText(post.body)
+        
+
+
 
 
 
