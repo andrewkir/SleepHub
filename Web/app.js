@@ -8,8 +8,6 @@ var crypto          = require("crypto"),
     mOverride       = require("method-override"),
     GoogleStrategy  = require("passport-google-oauth20"),
     randomstring    = require("randomstring");
- 
-
 
 
 const config = require("./root/config.json");
@@ -121,15 +119,16 @@ app.post("/toggleLike", isLoggedIn, hasUsernameFetch, (req, res)=>{
     .catch((err)=>{})
 })
 app.get("/login", (req, res)=>{
-    // res.render("login");
     res.render("login_local");
+});
+app.post("/login", passport.authenticate("local", {successRedirect: "/"}), (req, res)=>{
+    console.log("oh, hello")
 });
 app.get("/GLink", passport.authenticate("google", {
     scope: ["https://www.googleapis.com/auth/fitness.activity.read", "profile" ],
     accessType: 'offline',
     prompt: 'consent'
 }));
-app.post("/login", passport.authenticate("local", {successRedirect: "/"}), (req, res)=>{});
 app.get("/return", function(req, res, next) {
 
     passport.authenticate('google', function(err, user, info) {
@@ -141,8 +140,7 @@ app.get("/return", function(req, res, next) {
                 db.collections.User.findByIdAndUpdate(data._id, {
                     gLink: true,
                     ["google.id"]: user.profile.id,
-                    ["google.gender"]: user.profile.gender || "-",
-                    token: user.refreshToken
+                    secret_token: user.refreshToken
                 })
                 .then((data)=>{
                     if(data){
@@ -153,7 +151,7 @@ app.get("/return", function(req, res, next) {
         });
     })(req, res, next);
   });
-app.get("/info", isLoggedIn, (req, res)=>{
+app.get("/info", isLoggedIn, updateToken, (req, res)=>{
     db.collections.User.findById(req.user._id)
     .then((data)=>{
         var options = {
@@ -173,21 +171,27 @@ app.get("/info", isLoggedIn, (req, res)=>{
         });
     });
 });
-app.get("/shit", (req, res)=>{
-    var options = {
-        uri: `https://www.googleapis.com/oauth2/v4/token`,
-        method: "POST",
-        json: {
-            client_id: config.GOOGLECLIENTID,
-            client_secret: config.GOOGLECLIENTSECRET,
-            refresh_token: "1/JWVTe55FAEKqd71qJjLFuyzMkpapAYNSHz9RgSnlpGE",
-            grant_type: "refresh_tokenHUY"
-        }
-    }
-    request(options, (err, resp, body)=>{
-        res.send(body);
-    });
-})
+// app.get("/getToken", isLoggedIn, (req, res)=>{
+//     db.collections.User.findOne({
+//         username: req.user.username
+//     })
+//     .then((data)=>{
+//         var options = {
+//             uri: `https://www.googleapis.com/oauth2/v4/token`,
+//             method: "POST",
+//             json: {
+//                 client_id: config.GOOGLECLIENTID,
+//                 client_secret: config.GOOGLECLIENTSECRET,
+//                 refresh_token: data.secret_token,
+//                 grant_type: "refresh_token"
+//             }
+//         }
+//         request(options, (err, resp, body)=>{
+//             res.send(body.access_token);
+//         });
+//     })
+   
+// })
 app.get("/register", (req, res)=>{
     res.render("register");
 });
@@ -195,9 +199,8 @@ app.post("/register", (req, res)=>{
     db.collections.User.create({
         username: req.body.username,
         ["local.password"]: hash(req.body.password),
-        ["local.email"]: req.body.email,
         displayName: req.body.name,
-        androidToken: randomstring(20)
+        androidToken: randomstring.generate(20)
     })
     .then((data)=>{
         passport.authenticate("local")(req, res, ()=>{
@@ -220,7 +223,7 @@ app.post("/new", isLoggedIn, hasUsername, (req, res)=>{
         db.collections.Post.create({
             userId: data.id,
             username: data.username,
-            post: req.body.post_body,
+            body: req.body.post_body,
             displayName: data.displayName || ""
         })
         .then((result)=>{
@@ -316,9 +319,31 @@ function hasUsernameFetch(req, res, next){
 function hash(password){
     return crypto.createHmac('sha256', config.HASHSECRET).update(password).digest('hex');
 }
+function updateToken(req, res, next){
+    db.collections.User.findById(req.user._id)
+    .then((data)=>{
+        var options = {
+            uri: `https://www.googleapis.com/oauth2/v4/token`,
+            method: "POST",
+            json: {
+                client_id: config.GOOGLECLIENTID,
+                client_secret: config.GOOGLECLIENTSECRET,
+                refresh_token: data.secret_token,
+                grant_type: "refresh_token"
+            }
+        }
+        request(options, (err, resp, body)=>{
+            db.collections.User.findByIdAndUpdate(data._id, {
+                token: body.access_token
+            }, (err, data)=>{
+                next()
+            })
+        });
+    })
+}
 
 app.get("/qqq", (req, res)=>{
     res.render("shit");
 });
 
-app.listen(3000);
+app.listen(3000, "0.0.0.0");

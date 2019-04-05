@@ -22,10 +22,6 @@ var UserSchema = new mongoose.Schema({
     local: {
         password: {
             type: String
-        },
-        isVerfied: {
-            type: Boolean,
-            default: false
         }
     },
     gLink: {
@@ -35,12 +31,12 @@ var UserSchema = new mongoose.Schema({
     google: {
         id: {
             type: Number,
-        },
-        gender: {
-            type: String
         }
     },
-    token: {
+    secret_token: {
+        type: String
+    },
+    token:{
         type: String
     },
     androidToken: {

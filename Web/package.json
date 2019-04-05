@@ -15,6 +15,7 @@
     "ejs": "^2.6.1",
     "express": "^4.16.4",
     "express-session": "^1.15.6",
+    "localtunnel": "^1.9.1",
     "method-override": "^3.0.0",
     "mongoose": "^5.4.10",
     "nodemon": "^1.18.10",
