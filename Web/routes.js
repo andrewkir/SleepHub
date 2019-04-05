@@ -83,7 +83,7 @@ router.route('/getPosts').post(function(req, res) {
 
             }
             postData.forEach(el => {
-                temp = {};
+                var temp = {};
                 var date = new Date(el.date);
                 temp.likes = el.likes.length;
                 temp.views = el.views;
@@ -119,7 +119,7 @@ router.route('/postInfo').post(function(req, res) {
             _id: req.body.id
         })
         .then((postData)=>{
-            temp = {};
+            var temp = {};
             
             temp.likes = postData.likes.length;
             var date = postData.date;
@@ -144,6 +144,35 @@ router.route('/postInfo').post(function(req, res) {
     })
 });
 
+router.route('/profile').post(function(req, res) {
+    db.collections.User.findOne({
+        androidToken: req.body.androidToken
+    })
+    .then((data)=>{
+        db.collections.User.findOne({
+            _id: req.body.id
+        })
+        .then((user)=>{
+            var temp = {};
+            temp.rating = user.rating;
+            temp.name = user.displayName;
+            temp.username = user.username;
+            temp.isMe = data._id == req.body.id ? true : false;
+            if(data._id == req.body.id){
+                temp.gLink = user.gLink;
+            }
+            res.send(JSON.stringify(temp));
+        })
+        .catch((err)=>{
+            res.send(err);
+        })
+    })
+    .catch((err)=>{
+        res.send(JSON.stringify({
+            error: "wrong token"
+        }))
+    })
+});
 
 
 function hash(password){
