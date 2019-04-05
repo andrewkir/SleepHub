@@ -27,7 +27,7 @@ import kotlinx.android.synthetic.main.app_bar_posts_main.*
 import kotlinx.android.synthetic.main.content_posts_main.*
 import kotlinx.android.synthetic.main.nav_header_posts_main.*
 import android.support.v4.widget.SwipeRefreshLayout
-
+import kotlinx.android.synthetic.main.raw_post_item.*
 
 
 class PostsMainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
@@ -36,17 +36,23 @@ class PostsMainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_posts_main)
         setSupportActionBar(toolbar)
+        enableSpinner(true)
         val recycler = findViewById<RecyclerView>(R.id.postsRecycler)
         recycler.adapter = RecyclerPostsAdapter(this, posts) { post ->
-            Toast.makeText(this, post.username, Toast.LENGTH_SHORT).show()
+            val intent = Intent(this, PostActivity::class.java)
+            intent.putExtra("post_id", post.postId)
+            startActivity(intent)
         }
         val layoutManager = LinearLayoutManager(this)
         recycler.layoutManager = layoutManager
         recycler.setHasFixedSize(true)
         Web.getPosts(this, App.prefs.userToken, 0) { receivedPosts ->
             changePosts(receivedPosts)
+            enableSpinner(false)
             recycler.adapter = RecyclerPostsAdapter(this, posts) { post ->
-                Toast.makeText(this, post.username, Toast.LENGTH_SHORT).show()
+                val intent = Intent(this, PostActivity::class.java)
+                intent.putExtra("post_id", post.postId)
+                startActivity(intent)
             }
         }
         val toggle = ActionBarDrawerToggle(
@@ -68,11 +74,13 @@ class PostsMainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
         swipeContainer.setOnRefreshListener {
             Web.getPosts(this, App.prefs.userToken, 0) { receivedPosts ->
                 changePosts(receivedPosts)
-                Toast.makeText(this,"UPDATED",Toast.LENGTH_SHORT).show()
                 swipeContainer.isRefreshing = false
                 recycler.adapter = RecyclerPostsAdapter(this, posts) { post ->
-                    Toast.makeText(this, post.username, Toast.LENGTH_SHORT).show()
+                    val intent = Intent(this, PostActivity::class.java)
+                    intent.putExtra("post_id", post.postId)
+                    startActivity(intent)
                 }
+                enableSpinner(false)
             }
         }
         swipeContainer.setColorSchemeResources(
@@ -107,18 +115,6 @@ class PostsMainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
             R.id.nav_gallery -> {
 
             }
-            R.id.nav_slideshow -> {
-
-            }
-            R.id.nav_manage -> {
-
-            }
-            R.id.nav_share -> {
-
-            }
-            R.id.nav_send -> {
-
-            }
         }
 
         drawer_layout.closeDrawer(GravityCompat.START)
@@ -146,4 +142,11 @@ class PostsMainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
         dialog.window.setBackgroundDrawable(ColorDrawable(Color.WHITE))
     }
 
+    fun enableSpinner(enable: Boolean) {
+        if (enable) {
+            postsSpinner.visibility = View.VISIBLE
+        } else {
+            postsSpinner.visibility = View.INVISIBLE
+        }
+    }
 }

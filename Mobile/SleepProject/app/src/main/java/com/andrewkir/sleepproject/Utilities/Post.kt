@@ -1,9 +1,6 @@
 package com.andrewkir.sleepproject.Utilities
 
-class Post(var postId: String, var username: String, var displayName: String,
-           var body: String, var postTitle: String, var date: String, var likes: ArrayList<String>,
-           var comments: ArrayList<Comment>, var viewers: ArrayList<String>, var views: Int, var isLiked: Boolean
-)
+class Post(var likes:Int, var comments: Int, var body:String, var username: String, var isMine:Boolean, var date: String, var isLiked: Boolean)
 
 class Comment(var commenterId: String, var commentBody: String, var date: String){
 }
