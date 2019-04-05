@@ -10,9 +10,12 @@ import android.support.v4.view.GravityCompat
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
+import android.support.v7.widget.RecyclerView
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import com.andrewkir.sleepproject.Adapters.RecyclerPostsAdapter
+import com.andrewkir.sleepproject.Utilities.Post
 import kotlinx.android.synthetic.main.activity_posts_main.*
 import kotlinx.android.synthetic.main.app_bar_posts_main.*
 import kotlinx.android.synthetic.main.content_posts_main.*
@@ -38,7 +41,9 @@ class PostsMainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
 //        supportActionBar?.setHomeButtonEnabled(true)
 //        supportActionBar?.setDisplayHomeAsUpEnabled(true)
 //        supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_google__g__logo)
-        textView2.text = App.prefs.userName + '\n' + App.prefs.userToken
+        val recycler = findViewById<RecyclerView>(R.id.postsRecycler)
+//        val posts = List<Post>(Post())
+//        recycler.adapter = RecyclerPostsAdapter(this, )
         nav_view.setNavigationItemSelectedListener(this)
     }
 
