@@ -38,8 +38,8 @@ class LoginActivity : AppCompatActivity() {
                 } else {
                     if (username.isEmpty()) editUsernameLogin.error = ""
                     if (password.isEmpty()) editPasswordLogin.error = ""
+                    startActivity(Intent(this, PostsMainActivity::class.java))
                 }
-                startActivity(Intent(this, PostsMainActivity::class.java))
             }
         }
 

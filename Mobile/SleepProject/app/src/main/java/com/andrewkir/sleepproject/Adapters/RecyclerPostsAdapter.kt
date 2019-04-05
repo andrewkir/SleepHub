@@ -38,11 +38,13 @@ class RecyclerPostsAdapter (val context: Context, val posts: List<PostMinified>,
         val postLikes = itemView?.findViewById<TextView>(R.id.raw_likes)
         val postLike = itemView?.findViewById<TextView>(R.id.raw_like)
         val postDate = itemView?.findViewById<TextView>(R.id.raw_date)
+        val postComments = itemView?.findViewById<TextView>(R.id.raw_comments)
         fun bindSubject(post: PostMinified, context: Context){
             if(post.isLiked){
                 postLike?.setBackgroundResource(R.drawable.ic_favorite_border_red_24dp)
             }
-
+            postComments?.text = post.comments.toString()
+            postDate?.text = post.date
             postUsername?.text = post.username
             postBody?.text = if (post.body.length > 120) post.body.slice(0..120)+"..." else post.body
             postLikes?.text = post.likes.toString()

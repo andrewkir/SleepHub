@@ -4,10 +4,10 @@ import android.content.Context
 import android.util.Log
 import android.widget.Toast
 import com.andrewkir.sleepproject.App
-import com.andrewkir.sleepproject.Utilities.LOGIN_URL
-import com.andrewkir.sleepproject.Utilities.REGISTER_URL
+import com.andrewkir.sleepproject.Utilities.*
 import com.android.volley.Request
 import com.android.volley.Response
+import com.android.volley.toolbox.JsonArrayRequest
 import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
@@ -73,6 +73,34 @@ object Web {
         }
         Volley.newRequestQueue(context).add(loginRequests)
     }
+    fun getPosts(context: Context, token: String, amount: Int,posts:(MutableList<PostMinified>) -> Unit){
+        val jsonBody = JSONObject()
+        jsonBody.put("androidToken", token)
+        jsonBody.put("amount", amount)
+        val loginBody = jsonBody.toString()
+        val resPosts = mutableListOf<PostMinified>()
+        val loginRequests = object : JsonArrayRequest(Request.Method.POST, GET_POSTS,null, Response.Listener { response ->
+//            Toast.makeText(context, response.toString(), Toast.LENGTH_LONG).show()
+            for(i in 0 until response.length()){
+                val obj:JSONObject = response[i] as JSONObject
+                val post = PostMinified(obj.getString("username"),obj.getString("body"),obj.getBoolean("isLiked"),obj.getInt("likes"),obj.getString("id"),obj.getString("date"),obj.getInt("comments"))
+                resPosts.add(post)
+            }
+            posts(resPosts)
+        }, Response.ErrorListener { error ->
+            Log.d("ERROR", "Could not login user: $error")
+        }) {
+            override fun getBody(): ByteArray {
+                return loginBody.toByteArray()
+            }
+            override fun getBodyContentType(): String {
+                return "application/json; charset=utf-8"
+            }
+        }
+        Volley.newRequestQueue(context).add(loginRequests)
+    }
+
+//    token, amount
 
 
 }

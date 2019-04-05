@@ -15,8 +15,10 @@ import android.support.v7.widget.RecyclerView
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.widget.TextView
 import android.widget.Toast
 import com.andrewkir.sleepproject.Adapters.RecyclerPostsAdapter
+import com.andrewkir.sleepproject.Services.Web
 import com.andrewkir.sleepproject.Utilities.Comment
 import com.andrewkir.sleepproject.Utilities.Post
 import com.andrewkir.sleepproject.Utilities.PostMinified
@@ -24,43 +26,62 @@ import kotlinx.android.synthetic.main.activity_posts_main.*
 import kotlinx.android.synthetic.main.app_bar_posts_main.*
 import kotlinx.android.synthetic.main.content_posts_main.*
 import kotlinx.android.synthetic.main.nav_header_posts_main.*
+import android.support.v4.widget.SwipeRefreshLayout
+
+
 
 class PostsMainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
-
+    var posts = mutableListOf<PostMinified>()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_posts_main)
         setSupportActionBar(toolbar)
-
-        fab.setOnClickListener { view ->
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                .setAction("Action", null).show()
-        }
-
-        val toggle = ActionBarDrawerToggle(
-            this, drawer_layout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close
-        )
-        drawer_layout.addDrawerListener(toggle)
-        toggle.syncState()
-//        supportActionBar?.setHomeButtonEnabled(true)
-//        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-//        supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_google__g__logo)
         val recycler = findViewById<RecyclerView>(R.id.postsRecycler)
-        val posts = listOf(
-            PostMinified(
-                "username",
-                "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
-                true,
-                1308,
-                "123", "05.04.2019", 123
-            ), PostMinified("username", "test", false, 1308, "asdasd", "05.04.2019", 123)
-        )
         recycler.adapter = RecyclerPostsAdapter(this, posts) { post ->
             Toast.makeText(this, post.username, Toast.LENGTH_SHORT).show()
         }
         val layoutManager = LinearLayoutManager(this)
         recycler.layoutManager = layoutManager
         recycler.setHasFixedSize(true)
+        Web.getPosts(this, App.prefs.userToken, 0) { receivedPosts ->
+            changePosts(receivedPosts)
+            recycler.adapter = RecyclerPostsAdapter(this, posts) { post ->
+                Toast.makeText(this, post.username, Toast.LENGTH_SHORT).show()
+            }
+        }
+        val toggle = ActionBarDrawerToggle(
+            this, drawer_layout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close
+        )
+        drawer_layout.addDrawerListener(toggle)
+        toggle.syncState()
+
+        val navigationView = findViewById<View>(R.id.nav_view) as NavigationView
+        val headerView = navigationView.getHeaderView(0)
+
+        val name_drawer = headerView.findViewById<TextView>(R.id.drawerName)
+        val username_drawer = headerView.findViewById<TextView>(R.id.drawerUsername)
+
+        name_drawer.text = App.prefs.userName
+        username_drawer.text = App.prefs.userUsername
+        val swipeContainer = findViewById<SwipeRefreshLayout>(R.id.swipe_container)
+        // Setup refresh listener which triggers new data loading
+        swipeContainer.setOnRefreshListener {
+            Web.getPosts(this, App.prefs.userToken, 0) { receivedPosts ->
+                changePosts(receivedPosts)
+                Toast.makeText(this,"UPDATED",Toast.LENGTH_SHORT).show()
+                swipeContainer.isRefreshing = false
+                recycler.adapter = RecyclerPostsAdapter(this, posts) { post ->
+                    Toast.makeText(this, post.username, Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+        swipeContainer.setColorSchemeResources(
+            android.R.color.holo_blue_bright,
+            android.R.color.holo_green_light,
+            android.R.color.holo_orange_light,
+            android.R.color.holo_red_light
+        )
+
 
         nav_view.setNavigationItemSelectedListener(this)
     }
@@ -71,6 +92,10 @@ class PostsMainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
         } else {
             super.onBackPressed()
         }
+    }
+
+    private fun changePosts(resPosts: MutableList<PostMinified>) {
+        posts = resPosts
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
@@ -120,4 +145,5 @@ class PostsMainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
         dialog.show()
         dialog.window.setBackgroundDrawable(ColorDrawable(Color.WHITE))
     }
+
 }
