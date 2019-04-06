@@ -1,5 +1,6 @@
 var crypto          = require("crypto"),
     express         = require('express'),
+    request         = require("request"),
     mongoose        = require("mongoose"),
     randomstring    = require("randomstring");
 
@@ -216,6 +217,32 @@ router.route('/toggleLike').post(function(req, res) {
     })
 });
 
+router.route('/add').post(function(req, res) {
+    db.collections.User.findOne({
+        androidToken: req.body.androidToken
+    })
+    .then((data)=>{
+        db.collections.Post.create({
+            body: req.body.body,
+            userId: data._id,
+            name: data.displayName
+        })
+        .then((postData)=>{
+            return res.send(JSON.stringify({
+                id: postData._id
+            }))
+        })
+        .catch((err)=>{
+            res.send(err);
+        })
+    })
+    .catch((err)=>{
+        res.send(JSON.stringify({
+            error: "wrong token"
+        }))
+    })
+});
+
 router.route('/delete').post(function(req, res) {
     db.collections.User.findOne({
         androidToken: req.body.androidToken
@@ -259,10 +286,14 @@ router.route('/update').post(function(req, res) {
                     body: req.body.body
                 })
                 .then((result)=>{
-                    res.sendStatus(200);
+                    res.send(JSON.stringify({
+                        body: req.body.body
+                    }));
                 })
             } else {
-                res.sendStatus(403);
+                res.send(JSON.stringify({
+                    error: "you can edit only your own posts"
+                }));
             }
         })
         .catch((err)=>{
@@ -275,6 +306,75 @@ router.route('/update').post(function(req, res) {
         }))
     })
 });
+
+router.route('/sleepData').post(function(req, res) {
+    db.collections.User.findOne({
+        androidToken: req.body.androidToken
+    })
+    .then((data)=>{
+        if(!data.gLink){
+            return res.send(JSON.stringify({
+                error: "not authorized in google"
+            }))
+        }
+        db.collections.User.findById(data._id)
+        .then((response)=>{
+            var options = {
+                uri: `https://www.googleapis.com/oauth2/v4/token`,
+                method: "POST",
+                json: {
+                    client_id: config.GOOGLECLIENTID,
+                    client_secret: config.GOOGLECLIENTSECRET,
+                    refresh_token: response.secret_token,
+                    grant_type: "refresh_token"
+                }
+            }
+            request(options, (err, resp, body)=>{
+                var options = {
+                    uri: `https://www.googleapis.com/fitness/v1/users/me/dataset:aggregate?access_token=${body.access_token}`,
+                    method: "POST",
+                    json: {
+                        "aggregateBy": [{
+                            "dataSourceId": "raw:com.google.activity.segment:com.urbandroid.sleep:"
+                        }],
+                        "bucketByTime": { "durationMillis": 86400000 },
+                        "startTimeMillis": new Date().getTime() - 864000000,
+                        "endTimeMillis": new Date().getTime()
+                    }
+                }
+                request(options, (err, resp, body)=>{
+                    var bucketLength = body.bucket.length;
+
+                    res.send(body.bucket);
+                });
+            });
+        })
+        // db.collections.Post.findOne({
+        //     _id: req.body.id
+        // })
+        // .then((postData)=>{
+        //     if(data._id == postData.userId){
+        //         db.collections.Post.findByIdAndUpdate(postData._id, {
+        //             body: req.body.body
+        //         })
+        //         .then((result)=>{
+        //             res.sendStatus(200);
+        //         })
+        //     } else {
+        //         res.sendStatus(403);
+        //     }
+        // })
+        // .catch((err)=>{
+        //     res.send(err);
+        // })
+    })
+    .catch((err)=>{
+        res.send(JSON.stringify({
+            error: "wrong token"
+        }))
+    })
+});
+
 
 
 function hash(password){

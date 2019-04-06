@@ -124,7 +124,7 @@ app.get("/login", (req, res)=>{
 app.post("/login", passport.authenticate("local", {successRedirect: "/"}), (req, res)=>{
     console.log("oh, hello")
 });
-app.get("/GLink", passport.authenticate("google", {
+app.get("/GLink", isLoggedIn, passport.authenticate("google", {
     scope: ["https://www.googleapis.com/auth/fitness.activity.read", "profile" ],
     accessType: 'offline',
     prompt: 'consent'
@@ -214,10 +214,10 @@ app.get("/logout", (req, res)=>{
     res.redirect("/");
 });
  
-app.get("/new", isLoggedIn, hasUsername, (req, res)=>{
+app.get("/new", isLoggedIn, (req, res)=>{
     res.render("newPost");
 })
-app.post("/new", isLoggedIn, hasUsername, (req, res)=>{
+app.post("/new", isLoggedIn, (req, res)=>{
     db.collections.User.findById(req.user._id)
     .then((data)=>{
         db.collections.Post.create({
@@ -274,7 +274,7 @@ app.get("/post/:id/edit", isLoggedIn, isMyPost, (req, res)=>{
 });
 app.put("/post/:id/edit", isLoggedIn, isMyPost, (req, res)=>{
     db.collections.Post.findByIdAndUpdate(req.params.id, {
-        post: req.body.post_body
+        body: req.body.post_body
     })
     .then((data)=>{
         res.redirect(`/post/${req.params.id}`);
