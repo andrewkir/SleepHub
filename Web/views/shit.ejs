@@ -65,6 +65,20 @@
         <input type="text" name="body" placeholder="body">
         <input type="submit">
     </form>
+    <br>addComment
+    <form action="/api/addComment" method="post">
+        <input type="text" name="androidToken" placeholder="token">
+        <input type="text" name="id" placeholder="post_id">
+        <input type="text" name="body" placeholder="body">
+        <input type="submit">
+    </form>
+    <br>deleteComment
+    <form action="/api/deleteComment" method="post">
+        <input type="text" name="androidToken" placeholder="token">
+        <input type="text" name="post_id" placeholder="post_id">
+        <input type="text" name="comment_id" placeholder="comment_id">
+        <input type="submit">
+    </form>
     <br>sleep
     <form action="/api/sleepData" method="post">
         <input type="text" name="androidToken" placeholder="token">

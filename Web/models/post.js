@@ -9,9 +9,11 @@ var PostSchema = new mongoose.Schema({
     likes: [String],
     comments: [
         {
-            commenterId: String,
-            commentBody: String,
-            date: {type: Date, default: Date.now}
+            username: String,
+            userId: String,
+            body: String,
+            date: {type: Date, default: Date.now},
+            likes: [String]
         }
     ],
     viewers: [String],

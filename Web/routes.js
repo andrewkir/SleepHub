@@ -307,6 +307,100 @@ router.route('/update').post(function(req, res) {
     })
 });
 
+router.route('/addComment').post(function(req, res) {
+    db.collections.User.findOne({
+        androidToken: req.body.androidToken
+    })
+    .then((data)=>{
+        db.collections.Post.findByIdAndUpdate(req.body.id, {
+            $push: {
+                comments: {
+                    username: data.username,
+                    userId: data._id,
+                    body: req.body.body
+                }
+            }
+        })
+        .then((result)=>{
+            db.collections.Post.findById(req.body.id)
+            .then((postData)=>{
+                console.log(postData.comments);
+                var posts = [];
+                postData.comments.forEach(el => {
+                    var temp = {};
+                    temp.likes = el.likes.length;
+                    temp.id = el._id;
+                    temp.body = el.body;
+                    temp.username = el.username;
+                    temp.date = new Date(el.date).getTime();
+                    temp.isLiked = el.likes.indexOf(data._id) > -1;
+                    temp.isMine = el.userId == data._id;
+                    posts.push(temp);
+                });
+                return res.send(JSON.stringify(posts))
+            })
+            
+            
+        })
+        .catch((err)=>{
+            res.send(err);
+        })
+    })
+    .catch((err)=>{
+        res.send(JSON.stringify({
+            error: "wrong token"
+        }))
+    })
+});
+
+router.route('/deleteComment').post(function(req, res) {
+    db.collections.User.findOne({
+        androidToken: req.body.androidToken
+    })
+    .then((data)=>{
+        db.collections.Post.findById(req.body.post_id)
+        .then((result)=>{
+            result.comments.forEach((el, index, object) => {
+                if(el.id == req.body.comment_id){
+                    object.splice(index, 1);
+                }
+            });
+            db.collections.Post.findByIdAndUpdate(req.body.post_id, {
+                comments: result.comments
+            })
+            .then((response)=>{
+                db.collections.Post.findById(req.body.post_id)
+                .then((shit)=>{
+                    var posts = [];
+                    shit.comments.forEach(el => {
+                        var temp = {};
+                        temp.likes = el.likes.length;
+                        temp.id = el._id;
+                        temp.body = el.body;
+                        temp.username = el.username;
+                        temp.date = new Date(el.date).getTime();
+                        temp.isLiked = el.likes.indexOf(data._id) > -1;
+                        temp.isMine = el.userId == data._id;
+                        posts.push(temp);
+                    });
+                    return res.send(JSON.stringify(posts))
+                })
+                
+            })
+                
+        })
+        .catch((err)=>{
+            res.send(err);
+        })
+    })
+    .catch((err)=>{
+        res.send(JSON.stringify({
+            error: "wrong token"
+        }))
+    })
+});
+
+
 router.route('/sleepData').post(function(req, res) {
     db.collections.User.findOne({
         androidToken: req.body.androidToken
