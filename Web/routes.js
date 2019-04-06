@@ -184,7 +184,7 @@ router.route('/toggleLike').post(function(req, res) {
         })
         .then((post)=>{
                 var temp = {};
-                var ammountOfLikes = post.likes.length;
+                var amountOfLikes = post.likes.length;
                 if(post.likes.indexOf(data._id) > -1){
                     db.collections.Post.findByIdAndUpdate(post._id, {
                         $pull: {
@@ -192,7 +192,7 @@ router.route('/toggleLike').post(function(req, res) {
                         }
                     })
                     .then((result)=>{
-                        res.send(JSON.stringify({"isLiked": false, "ammount": --ammountOfLikes}));
+                        res.send(JSON.stringify({"isLiked": false, "amount": --amountOfLikes}));
                     })
                 } else {
                     db.collections.Post.findByIdAndUpdate(post._id, {
@@ -201,10 +201,69 @@ router.route('/toggleLike').post(function(req, res) {
                         }
                     })
                     .then((result)=>{
-                        res.send(JSON.stringify({"isLiked": true, "ammount": ++ammountOfLikes}));
+                        res.send(JSON.stringify({"isLiked": true, "amount": ++amountOfLikes}));
                     })
                 }
-            
+        })
+        .catch((err)=>{
+            res.send(err);
+        })
+    })
+    .catch((err)=>{
+        res.send(JSON.stringify({
+            error: "wrong token"
+        }))
+    })
+});
+
+router.route('/delete').post(function(req, res) {
+    db.collections.User.findOne({
+        androidToken: req.body.androidToken
+    })
+    .then((data)=>{
+        db.collections.Post.findOne({
+            _id: req.body.id
+        })
+        .then((postData)=>{
+            if(data._id == postData.userId){
+                db.collections.Post.findByIdAndDelete(postData._id)
+                .then((result)=>{
+                    res.sendStatus(200);
+                })
+            } else {
+                res.sendStatus(403);
+            }
+        })
+        .catch((err)=>{
+            res.send(err);
+        })
+    })
+    .catch((err)=>{
+        res.send(JSON.stringify({
+            error: "wrong token"
+        }))
+    })
+});
+
+router.route('/update').post(function(req, res) {
+    db.collections.User.findOne({
+        androidToken: req.body.androidToken
+    })
+    .then((data)=>{
+        db.collections.Post.findOne({
+            _id: req.body.id
+        })
+        .then((postData)=>{
+            if(data._id == postData.userId){
+                db.collections.Post.findByIdAndUpdate(postData._id, {
+                    body: req.body.body
+                })
+                .then((result)=>{
+                    res.sendStatus(200);
+                })
+            } else {
+                res.sendStatus(403);
+            }
         })
         .catch((err)=>{
             res.send(err);

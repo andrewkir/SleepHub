@@ -7,39 +7,56 @@
     <title>Document</title>
 </head>
 <body>
+    
     <form action="/api/register" method="post">
+        reg
+        <br>
         <input type="text" name="username" placeholder="username">
         <input type="text" name="name" placeholder="name">
         <input type="text" name="password" placeholder="password">
         <input type="submit">
     </form>
-    <br>
+    <br>login
     <form action="/api/login" method="post">
         <input type="text" name="username" placeholder="username">
         <input type="text" name="password" placeholder="password">
         <input type="submit">
     </form>
-    <br>
+    <br>getposts
     <form action="/api/getPosts" method="post">
         <input type="text" name="androidToken" placeholder="token">
         <input type="text" name="amount" placeholder="amount">
         <input type="submit">
     </form>
-    <br>
+    <br>postinfo
     <form action="/api/postInfo" method="post">
         <input type="text" name="androidToken" placeholder="token">
         <input type="text" name="id" placeholder="id">
         <input type="submit">
     </form>
-    <br>
+    <br>profile
     <form action="/api/profile" method="post">
         <input type="text" name="androidToken" placeholder="token">
         <input type="text" name="id" placeholder="user_id">
         <input type="submit">
     </form>
+    <br>toggle
     <form action="/api/toggleLike" method="post">
         <input type="text" name="androidToken" placeholder="token">
         <input type="text" name="id" placeholder="post_id">
+        <input type="submit">
+    </form>
+    <br>delete
+    <form action="/api/delete" method="post">
+        <input type="text" name="androidToken" placeholder="token">
+        <input type="text" name="id" placeholder="post_id">
+        <input type="submit">
+    </form>
+    <br>delete
+    <form action="/api/update" method="post">
+        <input type="text" name="androidToken" placeholder="token">
+        <input type="text" name="id" placeholder="post_id">
+        <input type="text" name="body" placeholder="body">
         <input type="submit">
     </form>
 </body>
