@@ -61,6 +61,12 @@ class PostsMainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
         drawer_layout.addDrawerListener(toggle)
         toggle.syncState()
 
+        fab.setOnClickListener {
+            val intent = Intent(this, EditPostActivity::class.java)
+            intent.putExtra("post_id","0")
+            startActivity(intent)
+        }
+
         val navigationView = findViewById<View>(R.id.nav_view) as NavigationView
         val headerView = navigationView.getHeaderView(0)
 

@@ -152,6 +152,7 @@ object Web {
                 obj.getInt("amount"),
                 obj.getBoolean("isLiked")
             )
+            Log.d("RESPONSE", obj.toString())
             likeClass(post)
         }, Response.ErrorListener { error ->
             Log.d("ERROR", "Could not login user: $error")
