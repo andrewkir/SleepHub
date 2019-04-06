@@ -174,6 +174,49 @@ router.route('/profile').post(function(req, res) {
     })
 });
 
+router.route('/toggleLike').post(function(req, res) {
+    db.collections.User.findOne({
+        androidToken: req.body.androidToken
+    })
+    .then((data)=>{
+        db.collections.Post.findOne({
+            _id: req.body.id
+        })
+        .then((post)=>{
+                var temp = {};
+                var ammountOfLikes = post.likes.length;
+                if(post.likes.indexOf(data._id) > -1){
+                    db.collections.Post.findByIdAndUpdate(post._id, {
+                        $pull: {
+                            likes: data._id
+                        }
+                    })
+                    .then((result)=>{
+                        res.send(JSON.stringify({"isLiked": false, "ammount": --ammountOfLikes}));
+                    })
+                } else {
+                    db.collections.Post.findByIdAndUpdate(post._id, {
+                        $push: {
+                            likes: data._id
+                        }
+                    })
+                    .then((result)=>{
+                        res.send(JSON.stringify({"isLiked": true, "ammount": ++ammountOfLikes}));
+                    })
+                }
+            
+        })
+        .catch((err)=>{
+            res.send(err);
+        })
+    })
+    .catch((err)=>{
+        res.send(JSON.stringify({
+            error: "wrong token"
+        }))
+    })
+});
+
 
 function hash(password){
     return crypto.createHmac('sha256', config.HASHSECRET).update(password).digest('hex');
