@@ -51,7 +51,6 @@ class PostActivity : AppCompatActivity() {
         //postTitle.setText(post.postTitle)
         //body.setText(post.body)
 
-
     }
 
     fun enableSpinner(enable: Boolean) {
