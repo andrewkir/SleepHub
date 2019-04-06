@@ -142,6 +142,30 @@ object Web {
         }
         Volley.newRequestQueue(context).add(loginRequests)
     }
+    fun toggleLike(context: Context, token: String, id: String, likeClass: (likeClass) -> Unit) {
+        val jsonBody = JSONObject()
+        jsonBody.put("androidToken", token)
+        jsonBody.put("id", id)
+        val loginBody = jsonBody.toString()
+        val loginRequests = object : JsonObjectRequest(Request.Method.POST, TOGGLE_LIKE, null, Response.Listener { obj ->
+            val post = likeClass(
+                obj.getInt("amount"),
+                obj.getBoolean("isLiked")
+            )
+            likeClass(post)
+        }, Response.ErrorListener { error ->
+            Log.d("ERROR", "Could not login user: $error")
+        }) {
+            override fun getBody(): ByteArray {
+                return loginBody.toByteArray()
+            }
+
+            override fun getBodyContentType(): String {
+                return "application/json; charset=utf-8"
+            }
+        }
+        Volley.newRequestQueue(context).add(loginRequests)
+    }
 
 //    token, amount
 
