@@ -118,9 +118,6 @@ class PostsMainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
             R.id.nav_camera -> {
                 // Handle the camera action
             }
-            R.id.nav_gallery -> {
-
-            }
         }
 
         drawer_layout.closeDrawer(GravityCompat.START)

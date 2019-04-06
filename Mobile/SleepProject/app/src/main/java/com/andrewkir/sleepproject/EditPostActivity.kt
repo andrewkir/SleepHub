@@ -4,6 +4,7 @@ import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.Toast
 import com.andrewkir.sleepproject.Services.Web
 import com.andrewkir.sleepproject.Utilities.Post
 import kotlinx.android.synthetic.main.activity_edit_post.*
@@ -43,7 +44,15 @@ class EditPostActivity : AppCompatActivity() {
 
         saveButton.setOnClickListener {
             if(isNew){
-
+                Web.sendPost(this,App.prefs.userToken, edit_post.text.toString()){
+                    success->
+                    if(success){
+                        finish()
+                    } else {
+                        Toast.makeText(this, "Error",Toast.LENGTH_SHORT).show()
+                    }
+                    enableSpinner(false)
+                }
             }
         }
 

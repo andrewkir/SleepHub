@@ -9,7 +9,6 @@ import com.android.volley.Request
 import com.android.volley.Response
 import com.android.volley.toolbox.JsonArrayRequest
 import com.android.volley.toolbox.JsonObjectRequest
-import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import org.json.JSONObject
 
@@ -87,16 +86,20 @@ object Web {
             object : JsonArrayRequest(Request.Method.POST, GET_POSTS, null, Response.Listener { response ->
                 for (i in 0 until response.length()) {
                     val obj: JSONObject = response[i] as JSONObject
-                    val post = PostMinified(
-                        obj.getString("username"),
-                        obj.getString("body"),
-                        obj.getBoolean("isLiked"),
-                        obj.getInt("likes"),
-                        obj.getString("id"),
-                        obj.getString("date"),
-                        obj.getInt("comments")
-                    )
-                    resPosts.add(post)
+                    try {
+                        val post = PostMinified(
+                            obj.getString("username"),
+                            obj.getString("body"),
+                            obj.getBoolean("isLiked"),
+                            obj.getInt("likes"),
+                            obj.getString("id"),
+                            obj.getString("date"),
+                            obj.getInt("comments")
+                        )
+                        resPosts.add(post)
+                    } catch (e: Exception) {
+
+                    }
                 }
                 posts(resPosts)
             }, Response.ErrorListener { error ->
@@ -142,18 +145,13 @@ object Web {
         }
         Volley.newRequestQueue(context).add(loginRequests)
     }
-    fun toggleLike(context: Context, token: String, id: String, likeClass: (likeClass) -> Unit) {
+    fun sendPost(context: Context, token: String, body: String, complete: (Boolean) -> Unit) {
         val jsonBody = JSONObject()
         jsonBody.put("androidToken", token)
-        jsonBody.put("id", id)
+        jsonBody.put("body", body)
         val loginBody = jsonBody.toString()
-        val loginRequests = object : JsonObjectRequest(Request.Method.POST, TOGGLE_LIKE, null, Response.Listener { obj ->
-            val post = likeClass(
-                obj.getInt("amount"),
-                obj.getBoolean("isLiked")
-            )
-            Log.d("RESPONSE", obj.toString())
-            likeClass(post)
+        val loginRequests = object : JsonObjectRequest(Request.Method.POST, SEND_POST, null, Response.Listener { obj ->
+            complete(true)
         }, Response.ErrorListener { error ->
             Log.d("ERROR", "Could not login user: $error")
         }) {
@@ -167,6 +165,155 @@ object Web {
         }
         Volley.newRequestQueue(context).add(loginRequests)
     }
+
+    fun toggleLike(context: Context, token: String, id: String, likeClass: (likeClass) -> Unit) {
+        val jsonBody = JSONObject()
+        jsonBody.put("androidToken", token)
+        jsonBody.put("id", id)
+        val loginBody = jsonBody.toString()
+        val loginRequests =
+            object : JsonObjectRequest(Request.Method.POST, TOGGLE_LIKE, null, Response.Listener { obj ->
+                val post = likeClass(
+                    obj.getInt("amount"),
+                    obj.getBoolean("isLiked")
+                )
+                Log.d("RESPONSE", obj.toString())
+                likeClass(post)
+            }, Response.ErrorListener { error ->
+                Log.d("ERROR", "Could not login user: $error")
+            }) {
+                override fun getBody(): ByteArray {
+                    return loginBody.toByteArray()
+                }
+
+                override fun getBodyContentType(): String {
+                    return "application/json; charset=utf-8"
+                }
+            }
+        Volley.newRequestQueue(context).add(loginRequests)
+    }
+
+    fun getComments(context: Context, token: String,id:String, comments: (MutableList<Comment>) -> Unit) {
+        val jsonBody = JSONObject()
+        jsonBody.put("androidToken", token)
+        jsonBody.put("id", id)
+        val loginBody = jsonBody.toString()
+        val resPosts = mutableListOf<Comment>()
+        val loginRequests =
+            object : JsonArrayRequest(Request.Method.POST, GET_COMMENTS, null, Response.Listener { response ->
+                for (i in 0 until response.length()) {
+                    val obj: JSONObject = response[i] as JSONObject
+                    try {
+                        val comment = Comment(
+                            obj.getString("id"),
+                            obj.getString("body"),
+                            obj.getString("username"),
+                            obj.getBoolean("isMine"),
+                            obj.getBoolean("isLiked"),
+                            obj.getInt("likes")
+                        )
+                        resPosts.add(comment)
+                    } catch (e: Exception) {
+
+                    }
+                }
+                comments(resPosts)
+            }, Response.ErrorListener { error ->
+                Log.d("ERROR", "Could not login user: $error")
+            }) {
+                override fun getBody(): ByteArray {
+                    return loginBody.toByteArray()
+                }
+
+                override fun getBodyContentType(): String {
+                    return "application/json; charset=utf-8"
+                }
+            }
+        Volley.newRequestQueue(context).add(loginRequests)
+    }
+
+    fun deleteComment(context: Context, token: String,id:String,comm_id:String, comments: (MutableList<Comment>) -> Unit) {
+        val jsonBody = JSONObject()
+        jsonBody.put("androidToken", token)
+        jsonBody.put("post_id", id)
+        jsonBody.put("comment_id",comm_id)
+        val loginBody = jsonBody.toString()
+        val resPosts = mutableListOf<Comment>()
+        val loginRequests =
+            object : JsonArrayRequest(Request.Method.POST, DELETE_COMMENT, null, Response.Listener { response ->
+                for (i in 0 until response.length()) {
+                    val obj: JSONObject = response[i] as JSONObject
+                    try {
+                        val comment = Comment(
+                            obj.getString("id"),
+                            obj.getString("body"),
+                            obj.getString("username"),
+                            obj.getBoolean("isMine"),
+                            obj.getBoolean("isLiked"),
+                            obj.getInt("likes")
+                        )
+                        Log.d("RES",obj.toString())
+                        resPosts.add(comment)
+                    } catch (e: Exception) {
+                        Log.d("ERROR",obj.toString())
+                    }
+                }
+                comments(resPosts)
+            }, Response.ErrorListener { error ->
+                Log.d("ERROR", "Could not login user: $error")
+            }) {
+                override fun getBody(): ByteArray {
+                    return loginBody.toByteArray()
+                }
+
+                override fun getBodyContentType(): String {
+                    return "application/json; charset=utf-8"
+                }
+            }
+        Volley.newRequestQueue(context).add(loginRequests)
+    }
+
+    fun sendComment(context: Context, token: String,id:String,body:String, comments: (MutableList<Comment>) -> Unit) {
+        val jsonBody = JSONObject()
+        jsonBody.put("androidToken", token)
+        jsonBody.put("body", body)
+        jsonBody.put("id", id)
+        val loginBody = jsonBody.toString()
+        val resPosts = mutableListOf<Comment>()
+        val loginRequests =
+            object : JsonArrayRequest(Request.Method.POST, SEND_COMMENTS, null, Response.Listener { response ->
+                for (i in 0 until response.length()) {
+                    val obj: JSONObject = response[i] as JSONObject
+                    try {
+                        val comment = Comment(
+                            obj.getString("id"),
+                            obj.getString("body"),
+                            obj.getString("username"),
+                            obj.getBoolean("isMine"),
+                            obj.getBoolean("isLiked"),
+                            obj.getInt("likes")
+                        )
+                        resPosts.add(comment)
+                    } catch (e: Exception) {
+
+                    }
+                }
+                comments(resPosts)
+            }, Response.ErrorListener { error ->
+                Log.d("ERROR", "Could not login user: $error")
+            }) {
+                override fun getBody(): ByteArray {
+                    return loginBody.toByteArray()
+                }
+
+                override fun getBodyContentType(): String {
+                    return "application/json; charset=utf-8"
+                }
+            }
+        Volley.newRequestQueue(context).add(loginRequests)
+    }
+
+
 
 //    token, amount
 
