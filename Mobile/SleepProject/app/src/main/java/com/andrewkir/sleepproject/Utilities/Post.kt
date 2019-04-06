@@ -8,3 +8,5 @@ class Comment(var commenterId: String, var commentBody: String, var date: String
 class PostMinified(var username: String, var body: String,var isLiked: Boolean,var likes: Int, var postId: String,
                    var date: String, var comments:Int){
 }
+
+class likeClass(var amount:Int, var isLiked: Boolean)

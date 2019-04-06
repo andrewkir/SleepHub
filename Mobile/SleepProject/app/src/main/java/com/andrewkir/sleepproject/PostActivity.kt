@@ -2,15 +2,11 @@ package com.andrewkir.sleepproject
 
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import android.support.v4.app.ShareCompat
-import android.content.Intent
 import android.util.Log
 import android.view.View
 import com.andrewkir.sleepproject.Services.Web
 import com.andrewkir.sleepproject.Utilities.Post
 import kotlinx.android.synthetic.main.activity_post.*
-import kotlinx.android.synthetic.main.raw_post_item.*
-import java.time.LocalDate
 
 
 class PostActivity : AppCompatActivity() {
@@ -24,20 +20,40 @@ class PostActivity : AppCompatActivity() {
         val username = postUsername
         val date = postDate
         val body = postBody
-        val like = postLike
+        val likeButton = postLike
         val likes = postLikes
         val comments = postComments
         enableSpinner(true)
         val commentsList = comments_list
         val edComment = comment_input
         val sendComment = comment_send
+
+        likeButton.setOnClickListener {
+            Web.toggleLike(this, App.prefs.userToken, postId) { like ->
+                if (like.isLiked) {
+                    if (like.isLiked) {
+                        likeButton.setBackgroundResource(0)
+                        likeButton.setBackgroundResource(R.drawable.ic_favorite_border_red_24dp)
+                    } else {
+                        likeButton.setBackgroundResource(0)
+                        likeButton.setBackgroundResource(R.drawable.ic_favorite_border_black_24dp)
+                    }
+                }
+                likes.text = like.amount.toString()
+            }
+        }
+
         fun change(post: Post) {
             username.text = post.username
             date.text = post.date
             body.text = post.body
             likes.text = post.likes.toString()
             comments.text = post.comments.toString()
-            if(post.isLiked) like.setBackgroundResource(R.drawable.ic_favorite_border_red_24dp)
+            if (post.isLiked) {
+                likeButton.setBackgroundResource(R.drawable.ic_favorite_border_red_24dp)
+            } else {
+                likeButton.setBackgroundResource(R.drawable.ic_favorite_border_black_24dp)
+            }
             postCard.visibility = View.VISIBLE
             enableSpinner(false)
         }
@@ -45,11 +61,6 @@ class PostActivity : AppCompatActivity() {
         Web.getPost(this, App.prefs.userToken, postId) { post ->
             change(post)
         }
-        //val post = Post()
-        //username.setText(post.username)
-        //date.setText(post.date)
-        //postTitle.setText(post.postTitle)
-        //body.setText(post.body)
 
     }
 
